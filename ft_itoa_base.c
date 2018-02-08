@@ -20,12 +20,12 @@ static int	is_neg(ssize_t n)
 	return (0);
 }
 
-int			numsize(size_t n, int base)
+int			numsize(size_t n)
 {
     int		counter;
 
     counter = 0;
-    if (base == 10 && is_neg(n) == 1)
+    if (is_neg(n) == 1)
     {
         n = -n;
         counter++;
@@ -34,7 +34,7 @@ int			numsize(size_t n, int base)
         counter++;
     while (n > 0)
     {
-        n = n / base;
+        n = n / 10;
         counter++;
     }
     return (counter);
@@ -83,7 +83,7 @@ char		*ft_itoa_base(size_t n, int base, t_specifier *spec)
     return (res);
 }
 
-char		*ft_itoa_base_pt(ssize_t n, t_specifier *spec)
+char		*ft_itoa_base_pt(ssize_t n)
 {
     size_t			num;
     char			*res;
@@ -91,7 +91,7 @@ char		*ft_itoa_base_pt(ssize_t n, t_specifier *spec)
     int				add;
 
     num = n;
-    size = numsize(num, 10);
+    size = numsize(num);
     if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
         return (NULL);
     res[size--] = '\0';
@@ -101,62 +101,8 @@ char		*ft_itoa_base_pt(ssize_t n, t_specifier *spec)
     {
         if (add == 1 && size == 0)
             res[size--] = '-';
-        res[size--] = num % 10 + (num % 10 > 9 ? help(spec) : '0');
+        res[size--] = num % 10 +  '0';
         num = num / 10;
     }
     return (res);
 }
-
-/*
-char		*ft_itoa_base(unsigned int n, int base, t_specifier *spec)
-{
-	size_t			num;
-	char			*res;
-	int				size;
-	int				add;
-
-	num = (base == 10) ? n : (size_t)n;
-	size = numsize(num, base);
-	if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
-		return (NULL);
-	res[size--] = '\0';
-	if (base == 10 && (add = is_neg(num)))
-		num *= (-1);
-	while (size >= 0)
-	{
-		if (add == 1 && size == 0 && base == 10)
-			res[size--] = '-';
-		res[size--] = num % base + (num % base > 9 ? help(spec) : '0');
-		num = num / base;
-	}
-	return (res);
-}
-
-
-char		*ft_itoa_base_pt(size_t n, int base, t_specifier *spec)
-{
-	size_t			num;
-	char			*res;
-	int				size;
-	int				add;
-
-	num = (base == 10) ? n : (size_t)n;
-	size = numsize(num, base);
-	if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
-		return (NULL);
-	res[size--] = '\0';
-	if (base == 10 && (add = is_neg(num)))
-		num *= (-1);
-	while (size >= 0)
-	{
-		if (add == 1 && size == 0 && base == 10)
-			res[size--] = '-';
-		res[size--] = num % base + (num % base > 9 ? help(spec) : '0');
-		num = num / base;
-	}
-	return (res);
-}
-
-
-*/
-

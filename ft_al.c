@@ -25,17 +25,17 @@ int     ft_len(char *s)
 
 void	*ft_realloc(void *array, size_t size)
 {
-	char	*res;
+    char	*res;
 
-	if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
-		return (NULL);
-	if (array)
-	{
+    if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
+        return (NULL);
+    if (array)
+    {
         ft_bzero(res, size + 1);
-		ft_strcpy(res, array);
-		free(array);
-	}
-	return (res);
+        ft_strcpy(res, array);
+        free(array);
+    }
+    return (res);
 }
 
 
@@ -71,97 +71,97 @@ ssize_t	ft_atoi_n(const char *str)
 
 t_lst	*ft_newlst(void)
 {
-	t_lst	*elem;
+    t_lst	*elem;
 
-	elem = (t_lst*)malloc(sizeof(t_lst));
-	elem->flags = (t_flags*)malloc(sizeof(t_flags));
-	elem->width = (t_width*)malloc(sizeof(t_width));
-	elem->precision = (t_precision*)malloc(sizeof(t_precision));
-	elem->length = (t_length*)malloc(sizeof(t_length));
-	elem->specifier = (t_specifier*)malloc(sizeof(t_specifier));
-	elem->flags = zero_to_flags(elem->flags);
-	elem->width = zero_to_width(elem->width);
-	elem->precision = zero_to_precision(elem->precision);
-	elem->length = zero_to_length(elem->length);
-	elem->specifier = zero_to_specifier(elem->specifier);
-	elem->text = ft_strdup("");
+    elem = (t_lst*)malloc(sizeof(t_lst));
+    elem->flags = (t_flags*)malloc(sizeof(t_flags));
+    elem->width = (t_width*)malloc(sizeof(t_width));
+    elem->precision = (t_precision*)malloc(sizeof(t_precision));
+    elem->length = (t_length*)malloc(sizeof(t_length));
+    elem->specifier = (t_specifier*)malloc(sizeof(t_specifier));
+    elem->flags = zero_to_flags(elem->flags);
+    elem->width = zero_to_width(elem->width);
+    elem->precision = zero_to_precision(elem->precision);
+    elem->length = zero_to_length(elem->length);
+    elem->specifier = zero_to_specifier(elem->specifier);
+    elem->text = ft_strdup("");
     elem->wrong = ft_strdup("");
-	return (elem);
+    return (elem);
 }
 
-const char	*ft_format(const char *form, t_lst *run)
+const char	*ft_format(const char *form, t_lst *run, va_list args)
 {
-	int	thing;
+    int	thing;
 
-		thing = 0;
-		while (*form && *form != '%')
-		{
-			run->text = ft_realloc(run->text, ft_strlen(run->text) + 1);
-			run->text = ft_strncat(run->text, form, 1);
-			form++;
-		}
-		if (*form == '%')
-			form++;
-		while (*form && thing == 0 &&*form != '\n')
-		{
-			form = ft_get_flags(form, run->flags);
-			form = ft_get_width(form, run->width);
-			form = ft_get_precision(form, run->precision);
-			form = ft_get_length(form, run->length);
-			thing = ft_get_specifier(form, run->specifier);
-			if (thing == 0)
-            	form = ft_wrong(form, run);
-			form++;
-            if (run->wrong[0])
-                break;
-		}
-       // if (*form)
-       // {
-        //    run->next = ft_newlst();
-        //    run = run->next;
-       // }
-	return (form);
+    thing = 0;
+    while (*form && *form != '%')
+    {
+        run->text = ft_realloc(run->text, ft_strlen(run->text) + 1);
+        run->text = ft_strncat(run->text, form, 1);
+        form++;
+    }
+    if (*form == '%')
+        form++;
+    while (*form && thing == 0 &&*form != '\n')
+    {
+        form = ft_get_flags(form, run->flags);
+        form = ft_get_width(form, run->width, args, run->flags);
+        form = ft_get_precision(form, run->precision, args);
+        form = ft_get_length(form, run->length);
+        thing = ft_get_specifier(form, run->specifier);
+        if (thing == 0)
+            form = ft_wrong(form, run);
+        form++;
+        if (run->wrong[0])
+            break;
+    }
+    // if (*form)
+    // {
+    //    run->next = ft_newlst();
+    //    run = run->next;
+    // }
+    return (form);
 }
 
 int		search_base(t_specifier *spec)
 {
-	if (spec->d || spec->i || spec->u || spec->D || spec->U)
-		return (10);
-	else if (spec->o || spec->O)
-		return (8);
-	else if (spec->x == 1 || spec->X == 1)
-		return (16);
-	else
-		return (10);
+    if (spec->d || spec->i || spec->u || spec->D || spec->U)
+        return (10);
+    else if (spec->o || spec->O)
+        return (8);
+    else if (spec->x == 1 || spec->X == 1)
+        return (16);
+    else
+        return (10);
 }
 
 
 char		*num_di(va_list args, t_length *run, t_specifier *spec)
 {
-	char	*res;
+    char	*res;
 
     if (run->z == 1)
-        res = ft_itoa_base_pt(va_arg(args, size_t), spec);
+        res = ft_itoa_base_pt(va_arg(args, size_t));
     else if (run->j == 1)
-        res = ft_itoa_base_pt(va_arg(args, intmax_t), spec);
+        res = ft_itoa_base_pt(va_arg(args, intmax_t));
     else if (run->ll)
-        res = ft_itoa_base_pt(va_arg(args, long long int), spec);
+        res = ft_itoa_base_pt(va_arg(args, long long int));
     else if (run->l == 1)
-        res = ft_itoa_base_pt(va_arg(args, long int), spec);
-	else if (run->h == 1)
-		res = ft_itoa_base_pt((short int)va_arg(args, int), spec);
-	else if (run->hh == 1)
-		res = ft_itoa_base_pt((signed char)va_arg(args, int), spec);
-	else if (run->L == 1)
-		res = ft_itoa_base(va_arg(args, int64_t), search_base(spec), spec);
-	else
-		res = ft_itoa_base_pt(va_arg(args, int), spec);
-	return (res);
+        res = ft_itoa_base_pt(va_arg(args, long int));
+    else if (run->h == 1)
+        res = ft_itoa_base_pt((short int)va_arg(args, int));
+    else if (run->hh == 1)
+        res = ft_itoa_base_pt((signed char)va_arg(args, int));
+    else if (run->L == 1)
+        res = ft_itoa_base(va_arg(args, int64_t), search_base(spec), spec);
+    else
+        res = ft_itoa_base_pt(va_arg(args, int));
+    return (res);
 }
 
 char		*num_rest(va_list args, t_length *run, t_specifier *spec)
 {
-	char	*res;
+    char	*res;
 
     if (run->z == 1)
         res = ft_itoa_base(va_arg(args, size_t), search_base(spec), spec);
@@ -171,31 +171,31 @@ char		*num_rest(va_list args, t_length *run, t_specifier *spec)
         res = ft_itoa_base(va_arg(args, unsigned long long int), search_base(spec), spec);
     else if (run->l == 1)
         res = ft_itoa_base((size_t)va_arg(args, unsigned long int), search_base(spec), spec);
-	else if (run->h == 1)
-		res = ft_itoa_base((unsigned short int)va_arg(args, int), search_base(spec), spec);
-	else if (run->hh == 1)
-		res = ft_itoa_base((unsigned char)va_arg(args, int), search_base(spec), spec);
-	else if (run->L == 1)
-		res = ft_itoa_base(va_arg(args, int64_t), search_base(spec), spec);
-	else
-		res = ft_itoa_base(va_arg(args, unsigned int), search_base(spec), spec);
-	return (res);
+    else if (run->h == 1)
+        res = ft_itoa_base((unsigned short int)va_arg(args, int), search_base(spec), spec);
+    else if (run->hh == 1)
+        res = ft_itoa_base((unsigned char)va_arg(args, int), search_base(spec), spec);
+    else if (run->L == 1)
+        res = ft_itoa_base(va_arg(args, int64_t), search_base(spec), spec);
+    else
+        res = ft_itoa_base(va_arg(args, unsigned int), search_base(spec), spec);
+    return (res);
 }
 
 char		*num_DOU(va_list args, t_specifier *spec, t_flags *flag)
 {
-	char    *res;
+    char    *res;
 
-	res = ft_strdup("\0");
-	if (spec->D)
-		res = ft_itoa_base_pt(va_arg(args, long int), spec);
-	else if (spec->O && flag->cell)
-		res = ft_itoa_base(va_arg(args, unsigned long int), search_base(spec), spec);
+    res = NULL;
+    if (spec->D)
+        res = ft_itoa_base_pt(va_arg(args, long int));
+    else if (spec->O && flag->cell)
+        res = ft_itoa_base(va_arg(args, unsigned long int), search_base(spec), spec);
     else if (spec->O)
         res = ft_itoa_base(va_arg(args, unsigned long int), search_base(spec), spec);
-	else if (spec->U)
-		res = ft_itoa_base(va_arg(args, unsigned long int), search_base(spec), spec);
-	return (res);
+    else if (spec->U)
+        res = ft_itoa_base(va_arg(args, unsigned long int), search_base(spec), spec);
+    return (res);
 }
 
 int        C_min(wchar_t c, t_lst *run)
@@ -222,7 +222,7 @@ int        C_n_min(wchar_t c, t_lst *run)
     int h;
     int res;
 
-    i = 0; 
+    i = 0;
     h = run->width->number - length_c(c);
     while (i < h)
     {
@@ -301,7 +301,7 @@ int         char_CS(va_list args, t_lst *run)
     }
     else if ((run->specifier->s == 1 && run->length->l) || run->specifier->S)
     {
-		s = (va_arg(args, wchar_t*));
+        s = (va_arg(args, wchar_t*));
         if (s == NULL)
             s = L"(null)";
         if (run->flags->minus)
@@ -314,16 +314,16 @@ int         char_CS(va_list args, t_lst *run)
 
 char		*ft_char_type(va_list args, t_specifier *spec, t_length *length)
 {
-	char    *res;
+    char    *res;
     char    *temp;
-    
-	res = NULL;
-	if (spec->c && !length->l)
+
+    res = NULL;
+    if (spec->c && !length->l)
     {
         res = ft_strnew(1);
-		res[0] = (va_arg(args, int));
+        res[0] = (va_arg(args, int));
     }
-	else if (spec->s == 1 && !length->l)
+    else if (spec->s == 1 && !length->l)
     {
         temp = (va_arg(args, char*));
         if (temp == NULL)
@@ -331,64 +331,64 @@ char		*ft_char_type(va_list args, t_specifier *spec, t_length *length)
         else
             res = ft_strdup(temp);
     }
-	return (res);
+    return (res);
 }
 
 int		is_num(t_specifier *spec, t_length *len)
 {
-	if (spec->d == 1|| spec->i == 1)
-		return (1);
-	else if (spec->o ==1|| spec->u == 1 || spec->x == 1 || spec->X == 1)
-		return (2);
-	else if (spec->D == 1 || spec->O == 1 || spec->U == 1)
-		return (3);
-	else if ((spec->c == 1 || spec->s == 1) && !len->l)
-		return (4);
+    if (spec->d == 1|| spec->i == 1)
+        return (1);
+    else if (spec->o ==1|| spec->u == 1 || spec->x == 1 || spec->X == 1)
+        return (2);
+    else if (spec->D == 1 || spec->O == 1 || spec->U == 1)
+        return (3);
+    else if ((spec->c == 1 || spec->s == 1) && !len->l)
+        return (4);
     else if (spec->C == 1 || spec->S == 1)
         return (7);
     else if ((spec->c == 1 || spec->s == 1) && len->l)
         return (7);
-	else if (spec->p == 1)
-		return (5);
-	else if (spec->proc == 1)
-		return (6);
-	else
-		return (0);
+    else if (spec->p == 1)
+        return (5);
+    else if (spec->proc == 1)
+        return (6);
+    else
+        return (0);
 }
 
 char		*parse_flags(intmax_t num, t_lst *run, char *res)
 {
-	char	*space;
+    char	*space;
 
-	space = NULL;
-	if (run->flags->plus && num >= 0 && (run->specifier->d || run->specifier->i))
-	{
-		space = ft_strdup("+");
-		return (space);
-	}
-	else if (run->flags->space && num >= 0 && is_num(run->specifier, run->length) == 1)
-	{
-		space = ft_strdup(" ");
-		return (space);
-	}
-	else if (run->flags->cell)
-	{
-		space = (run->specifier->o && res[0] != '0') ? ft_strdup("0") : space;
+    space = NULL;
+    if (run->flags->plus && num >= 0 && (run->specifier->d || run->specifier->i))
+    {
+        space = ft_strdup("+");
+        return (space);
+    }
+    else if (run->flags->space && num >= 0 && is_num(run->specifier, run->length) == 1)
+    {
+        space = ft_strdup(" ");
+        return (space);
+    }
+    else if (run->flags->cell)
+    {
+        space = (run->specifier->o && res[0] != '0') ? ft_strdup("0") : space;
         space = (run->specifier->O && res[0] != '0') ? ft_strdup("0") : space;
-		space = (run->specifier->x == 1 && num != 0) ? ft_strdup("0x") : space;
-		space = (run->specifier->X == 1 && num != 0) ? ft_strdup("0X") : space;
-		return (space);
-	}
+        space = (run->specifier->x == 1 && num != 0) ? ft_strdup("0x") : space;
+        space = (run->specifier->X == 1 && num != 0) ? ft_strdup("0X") : space;
+        return (space);
+    }
     else if (run->specifier->p)
         space = ft_strdup("0x");
-	if (num < 0 && (run->specifier->d || run->specifier->i || run->specifier->D))
-		space = ft_strdup("-");
-	return (space);
+    if (num < 0 && (run->specifier->d || run->specifier->i || run->specifier->D))
+        space = ft_strdup("-");
+    return (space);
 }
 
 char		*parse_accuracy(t_lst *run, char *num)
 {
-	int		ac;
+    int		ac;
     int 	size;
     int 	number;
     char	*temp;
@@ -430,23 +430,23 @@ int         type(t_lst *run)
 
 char		*parse_width(t_lst *run, char *num, char *accur, char *flag)
 {
-	int 	width;
-	char 	*temp;
+    int 	width;
+    char 	*temp;
     int     len;
 
     temp = NULL;
     len = (num[0] == '\0' && run->specifier->c) ? 1 : ft_len(num);
-	if (run->width->number >= 0)
-	{
-		width = run->width->number;
-		width = width - (len + ft_len(accur) + ft_len(flag));
-		if (width > 0)
-		{
-			temp = ft_strnew(width);
-			temp = ft_memset(temp, (run->flags->zero && !run->flags->minus && (!run->precision->fl || type(run))) ? '0' : ' ', width);
-		}
-	}
-	return (temp);
+    if (run->width->number >= 0)
+    {
+        width = run->width->number;
+        width = width - (len + ft_len(accur) + ft_len(flag));
+        if (width > 0)
+        {
+            temp = ft_strnew(width);
+            temp = ft_memset(temp, (run->flags->zero && !run->flags->minus && (!run->precision->fl || run->precision->dot_number < 0 || type(run))) ? '0' : ' ', width);
+        }
+    }
+    return (temp);
 }
 
 void        ft_clear(char *width, char *accur, char *flag)
@@ -515,7 +515,7 @@ int         ft_puttext_min(char *fl_ac, char *width, char *num, t_lst *run)
         len = 1;
     }
     (width != NULL) ? write(1, width, ft_len(width)) : 1;
-	//write(1, run->wrong, ft_strlen(run->wrong));
+    //write(1, run->wrong, ft_strlen(run->wrong));
     len += ft_len(fl_ac) + ft_len(width);
     ft_clear(fl_ac, width, NULL);
     return (len);
@@ -538,7 +538,7 @@ int         ft_puttext_zero(char *fl_wd, char *accur, char *num, t_lst *run)
         ft_putchar('\0');
         len = 1;
     }
-	//write(1, run->wrong, ft_strlen(run->wrong));
+    //write(1, run->wrong, ft_strlen(run->wrong));
     len += ft_len(fl_wd) + ft_len(accur);
     ft_clear(fl_wd, accur, NULL);
     return (len);
@@ -546,25 +546,25 @@ int         ft_puttext_zero(char *fl_wd, char *accur, char *num, t_lst *run)
 
 int         ft_puttext_min_p(char *fl_ac, char *width, char *num, t_lst *run)
 {
-	int len;
+    int len;
 
-	len = 0;
+    len = 0;
     (fl_ac != NULL) ? write(1, fl_ac, ft_strlen(fl_ac)) : 1;
-	if (num[0] != '\0')
-	{
+    if (num[0] != '\0')
+    {
         len = ft_len(num);
-		write(1, num, len);
-	}
-	else if (num[0] == '\0' && run->specifier->c)
-	{
-		ft_putchar('\0');
-		len = 1;
-	}
+        write(1, num, len);
+    }
+    else if (num[0] == '\0' && run->specifier->c)
+    {
+        ft_putchar('\0');
+        len = 1;
+    }
     (width != NULL) ? write(1, width, ft_strlen(width)) : 1;
-	//write(1, run->wrong, ft_strlen(run->wrong));
-	len += ft_len(fl_ac) + ft_len(width);
+    //write(1, run->wrong, ft_strlen(run->wrong));
+    len += ft_len(fl_ac) + ft_len(width);
     ft_clear(fl_ac, width, NULL);
-	return (len);
+    return (len);
 }
 
 int         ft_puttext(char *wd_fl, char *accur, char *num, t_lst *run)
@@ -584,7 +584,7 @@ int         ft_puttext(char *wd_fl, char *accur, char *num, t_lst *run)
         ft_putchar('\0');
         len = 1;
     }
-	//write(1, run->wrong, ft_strlen(run->wrong));
+    //write(1, run->wrong, ft_strlen(run->wrong));
     len += ft_len(wd_fl) + ft_len(accur);
     ft_clear(wd_fl, accur, NULL);
     return (len);
@@ -655,25 +655,28 @@ int		ft_align(t_lst *run, char *num)
 {
     if (ft_text(run) && run->precision->fl)
         num = pr_char(run, num);
-    if (run->specifier->s && run->precision->fl && run->precision->dot_number <= 0)
+    if (run->specifier->s && run->precision->fl)
+    {
+        if (run->precision->yes == 0 || run->precision->dot_number == 0)
+        {
+            free(num);
+            num = ft_strdup("");
+        }
+    }
+    if (ft_atoi(num) == 0 && run->precision->fl && ft_numeric(run))
     {
         free(num);
         num = ft_strdup("");
     }
-	if (ft_atoi(num) == 0 && run->precision->fl && ft_numeric(run))
-	{
-		free(num);
-		num = ft_strdup("");
-	}
-	if (run->flags->minus)
+    if (run->flags->minus)
         return (if_minus(run, num));
-	else
+    else
         return (if_not_minus(run, num));
 }
 
 int     ft_uni_type(t_specifier *spec, t_length *len)
 {
-    if (spec->C || (spec->c && len->l))
+    if (spec->C || (    spec->c && len->l))
         return (1);
     else if (spec->S || (spec->s && len->l))
         return (1);
@@ -726,7 +729,20 @@ int		ft_typing(va_list args, t_lst *head)
     size += ft_len(head->text);
     (head->specifier->proc) ? free(res) : 1;
     (head->wrong[0]) ? free(res) : 1;
+    (ft_numeric(head) == 1 || head->specifier->p) ? free(res) : 1;
+    (head->specifier->s && !head->length->l) ? free(res) : 1;
     return (size);
+}
+
+void    clear_struct(t_lst *head)
+{
+    free(head->length);
+    free(head->specifier);
+    free(head->text);
+    free(head->wrong);
+    free(head->width);
+    free(head->precision);
+    free(head->flags);
 }
 
 int		ft_printf(const char *format, ...)
@@ -742,12 +758,11 @@ int		ft_printf(const char *format, ...)
     form = format;
     while (*form)
     {
-		head = ft_newlst();
-        form = ft_format(form, head);
+        head = ft_newlst();
+        form = ft_format(form, head, args);
         num += ft_typing(args, head);
-        free(head->text);
-        free(head->wrong);
-		free(head);
+        clear_struct(head);
+        free(head);
     }
     va_end(args);
     return (num);

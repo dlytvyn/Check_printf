@@ -22,11 +22,20 @@ const char	*ft_get_flags(const char *form, t_flags *run)
 	return (form);
 }
 
-const char	*ft_get_width(const char *form, t_width *run)
+const char	*ft_get_width(const char *form, t_width *run, va_list args, t_flags *f)
 {
+    if (*form == '*')
+    {
+        run->number = va_arg(args, int);
+        if (run->number < 0)
+        {
+            run->number = -run->number;
+            f->minus = 1;
+        }
+    }
 	if (*form >= '1' && *form <= '9')
 	{
-		if (*form >= '1' && *form <= '9')
+		if (*form >= '0' && *form <= '9')
 			run->number = ft_atoi(form);
         while (*form >= '0' && *form <= '9')
             form++;
@@ -37,16 +46,24 @@ const char	*ft_get_width(const char *form, t_width *run)
 	return (form);
 }
 
-const char	*ft_get_precision(const char *form, t_precision *run)
+const char	*ft_get_precision(const char *form, t_precision *run, va_list args)
 {
 	if (*form == '.')
 	{
-        run->dot_number = 0;
+        run->yes = 0;
 		form++;
 		run->fl = 1;
-		if (*form >= '1' && *form <= '9')
+        run->dot_number = 0;
+        if (*form == '*')
+        {
+            run->dot_number = va_arg(args, int);
+            run->yes = (run->dot_number != 0) ? 1 : 0;
+            form++;
+        }
+        if (*form >= '0' && *form <= '9')
 		{
             run->dot_number = ft_atoi(form);
+            run->yes = (run->dot_number != 0) ? 1 : 0;
 			while (*form >= '0' && *form <= '9')
                 form++;
 		}
@@ -116,7 +133,7 @@ const char	*ft_wrong(const char *form, t_lst *run)
 {
 	char	*comp;
 
-	comp = ft_strdup("sSpdDiouUxXcC%-+ #0.123456789lLhjz");
+	comp = ft_strdup("sSpdDiouUxXcC%-+ #0*.123456789lLhjz");
 	if (ft_strchr(comp, *form) == 0)
 	{
         run->wrong = ft_realloc(run->wrong, ft_strlen(run->wrong) + 1);
