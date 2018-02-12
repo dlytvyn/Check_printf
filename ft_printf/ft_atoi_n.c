@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "string.h"
+#include "print.h"
 
 ssize_t	ft_atoi_n(const char *str)
 {
