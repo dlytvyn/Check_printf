@@ -32,19 +32,15 @@ int				ft_align(t_lst *run, char *num)
 {
 	if (ft_text(run) && run->pr->fl)
 		num = pr_char(run, num);
-	if (run->sp->s && run->pr->fl)
+	if (run->pr->fl)
 	{
-		if (run->pr->yes == 0 || run->pr->dot_number == 0)
+		if ((run->sp->s && (run->pr->yes == 0 || run->pr->dot_number == 0)) ||
+			(ft_atoi(num) == 0 && ft_numeric(run)))
 		{
 			free(num);
 			num = ft_strdup("");
-		}
-	}
-	if (ft_atoi(num) == 0 && run->pr->fl && ft_numeric(run))
-	{
-		free(num);
-		num = ft_strdup("");
-	}
+		}	
+	}	
 	if (run->flags->minus)
 		return (if_minus(run, num));
 	else
