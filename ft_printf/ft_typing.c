@@ -51,9 +51,9 @@ int		ft_typing(va_list args, t_lst *head)
 	if ((ft_uni_type(head->sp, head->length) == 0 || MB_CUR_MAX <= 1) && res)
 		size += ft_align(head, res);
 	size += ft_len(head->text);
-	(head->sp->proc) ? free(res) : 1;
-	(head->wrong[0]) ? free(res) : 1;
-	(ft_numeric(head) == 1 || head->sp->p) ? free(res) : 1;
-	(head->sp->s && !head->length->l) ? free(res) : 1;
+	(res) ? free(res) : 0;
+	//(head->sp->proc || head->wrong[0]) ? free(res) : 1;
+	//(ft_numeric(head) == 1 || head->sp->p) ? free(res) : 1;
+	//(head->sp->s && !head->length->l) ? free(res) : 1;
 	return (size);
 }
