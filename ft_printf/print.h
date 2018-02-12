@@ -16,6 +16,7 @@
 # include <stdarg.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <wchar_t>
 # include "../libft/libft.h"
 # include <locale.h>
 
