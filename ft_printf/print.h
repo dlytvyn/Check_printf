@@ -16,6 +16,7 @@
 # include <stdarg.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <sys/types.h>
 # include <stdio.h>
 # include <wchar.h>
 # include "../libft/libft.h"
