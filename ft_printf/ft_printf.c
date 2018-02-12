@@ -39,8 +39,8 @@ int				ft_align(t_lst *run, char *num)
 		{
 			free(num);
 			num = ft_strdup("");
-		}	
-	}	
+		}
+	}
 	if (run->flags->minus)
 		return (if_minus(run, num));
 	else

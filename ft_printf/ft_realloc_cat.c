@@ -23,11 +23,14 @@ char	*ft_realloc_cat(char *array, char *source)
 		return (NULL);
 	if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
 		return (NULL);
+	ft_bzero(res, size + 1);
 	if (array)
 		ft_strcpy(res, array);
 	if (source)
 		ft_strcat(res, source);
-	free(array);
-	free(source);
+	if (array)
+		ft_strdel(&array);
+	if (source)
+		ft_strdel(&source);
 	return (res);
 }

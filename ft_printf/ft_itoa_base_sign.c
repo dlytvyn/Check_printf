@@ -19,10 +19,12 @@ char		*ft_itoa_base_pt(ssize_t n)
 	int				size;
 	int				add;
 
+	res = NULL;
 	num = n;
 	size = numsize(num);
 	if (!(res = (char*)malloc(sizeof(char) * (size + 1))))
 		return (NULL);
+	ft_bzero(res, size + 1);
 	res[size--] = '\0';
 	if ((add = is_neg(num)) == 1)
 		num *= (-1);
@@ -30,8 +32,11 @@ char		*ft_itoa_base_pt(ssize_t n)
 	{
 		if (add == 1 && size == 0)
 			res[size--] = '-';
-		res[size--] = num % 10 + '0';
-		num = num / 10;
+		else
+		{
+			res[size--] = num % 10 + '0';
+			num = num / 10;
+		}
 	}
 	return (res);
 }
